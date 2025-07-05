@@ -1,0 +1,76 @@
+<div class="card">
+    <h2>CinemaBuddy</h2>
+    <p>Welcome, {{ username.title() }}!</p>
+
+    <!-- ✅ Language Selector -->
+    <label for="language">Select Input Language:</label>
+    <select id="language">
+        <option value="en-US">English</option>
+        <option value="hi-IN">Hindi</option>
+    </select>
+    <br><br>
+
+    <form method="POST">
+        <label>Director</label><br>
+        <input type="text" name="director" id="director" required>
+        <button type="button" onclick="startRecognition('director')">🎤</button><br><br>
+
+        <label>Actors</label><br>
+        <input type="text" name="actors" id="actors" required>
+        <button type="button" onclick="startRecognition('actors')">🎤</button><br><br>
+
+        <label>Censor</label><br>
+        <input type="text" name="censor" id="censor" required>
+        <button type="button" onclick="startRecognition('censor')">🎤</button><br><br>
+
+        <label>Main Genre</label><br>
+        <input type="text" name="genre" id="genre" required>
+        <button type="button" onclick="startRecognition('genre')">🎤</button><br><br>
+
+        <label>Runtime (minutes)</label><br>
+        <input type="number" name="runtime" required><br><br>
+
+        <button type="submit" style="padding: 10px 20px;">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <hr>
+    <h3>Prediction Results</h3>
+    <ul>
+        <li><strong>Rating:</strong> {{ rating|round(2) }}/10</li>
+        <li><strong>Gross:</strong> ${{ gross|round(2) }} million</li>
+        <li><strong>Success:</strong> {{ success }}</li>
+    </ul>
+    {% endif %}
+</div>
+
+<!-- ✅ Speech Recognition Script -->
+<script>
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (!SpeechRecognition) {
+        alert("Your browser does not support speech recognition. Try using Google Chrome.");
+    } else {
+        const recognizer = new SpeechRecognition();
+        recognizer.continuous = false;
+
+        function startRecognition(inputId) {
+            const lang = document.getElementById("language").value;
+            recognizer.lang = lang;
+            recognizer.start();
+
+            recognizer.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                document.getElementById(inputId).value = transcript;
+            };
+
+            recognizer.onerror = function(event) {
+                console.error('Speech recognition error:', event.error);
+                alert("Error during speech recognition: " + event.error);
+            };
+        }
+    }
+</script>
+
+
+
